@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Environment variables / secrets
+.env
+*.env
+
+# Airflow (Astro CLI local runtime)
+.astro/
+airflow_settings.yaml
+logs/
+
+# dbt
+target/
+dbt_packages/
+logs/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
