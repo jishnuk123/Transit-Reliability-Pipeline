@@ -1,0 +1,20 @@
+
+version: 2
+ 
+sources:
+  - name: raw
+    database: TRANSIT_PIPELINE
+    schema: RAW
+    tables:
+      - name: trip_updates
+        description: >
+          Flattened MBTA GTFS-realtime Trip Updates. One row per
+          stop-time-update. Loaded near-real-time by fetch_trip_updates.py.
+      - name: stops
+        description: "Every physical stop/station, from MBTA's static GTFS schedule."
+      - name: trips
+        description: "Every scheduled trip, from MBTA's static GTFS schedule."
+      - name: stop_times
+        description: >
+          Scheduled arrival/departure time for every trip at every stop,
+          from MBTA's static GTFS schedule. Overwritten on each refresh.
