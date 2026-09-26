@@ -17,10 +17,12 @@ logs/
 # dbt
 target/
 dbt_packages/
-logs/
 
 # macOS
 .DS_Store
 
 # IDE
-.vscode/data/
+.vscode/
+
+# Local raw data (runtime output, not source code)
+data/
