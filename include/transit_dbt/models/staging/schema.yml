@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: stg_stops
+    description: "Cleaned static GTFS stops reference table."
+    columns:
+      - name: stop_id
+        description: "Unique identifier for a physical stop/station."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_trips
+    description: "Cleaned static GTFS trips reference table."
+    columns:
+      - name: trip_id
+        description: "Unique identifier for a scheduled trip."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_trip_updates
+    description: "Cleaned real-time Trip Updates, one row per stop-time-update."
+    columns:
+      - name: trip_id
+        description: "Identifies which scheduled trip this update belongs to."
+        tests:
+          - not_null
+      - name: stop_id
+        description: "Identifies which physical stop this update refers to."
+        tests:
+          - not_null
+      # Not tested: trip_id/stop_id uniqueness. A trip legitimately visits
+      # many stops, and the same trip/stop pair can reappear across
+      # multiple ingestion runs as the feed re-predicts the same trip
+      # over time -- so duplicates here are expected, not an error.
