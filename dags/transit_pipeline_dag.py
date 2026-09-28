@@ -19,6 +19,7 @@ from airflow.decorators import dag, task
 # folder into the container, and it's on the Python path automatically.
 from include.scripts.fetch_trip_updates import fetch_and_write
 from include.scripts.load_to_snowflake import load_file
+from include.scripts.alerts import send_failure_alert
 
 DBT_PROJECT_DIR = "/usr/local/airflow/include/transit_dbt"
 
@@ -29,9 +30,15 @@ DBT_PROJECT_DIR = "/usr/local/airflow/include/transit_dbt"
     start_date=datetime(2026, 9, 1),
     catchup=False,  # don't backfill runs for the period before the DAG was turned on
     tags=["transit", "elt"],
+    default_args={
+        # Airflow automatically calls this function if ANY task in the
+        # DAG fails, without needing to attach it to each task individually.
+        "on_failure_callback": send_failure_alert,
+    },
 )
 def transit_trip_updates_pipeline():
 
+    @task()
     @task()
     def fetch_task():
         """Fetch and flatten the live MBTA Trip Updates feed."""
