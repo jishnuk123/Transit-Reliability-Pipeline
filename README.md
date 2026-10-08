@@ -10,8 +10,8 @@ Built to demonstrate core data engineering skills: multi-source ingestion, ELT d
  
 ![Architecture diagram](docs/architecture.png)
  
-<details>
-</details>
+
+
 **What each stage is actually doing, and why it's a separate stage:**
 - **Extract**: get data out of a source system, as-is — no interpretation yet. Two sources, two different natural frequencies.
 - **Parse**: convert whatever format the source uses (binary Protobuf, CSV) into a row/column shape a database can store. This is format conversion, not business logic.
