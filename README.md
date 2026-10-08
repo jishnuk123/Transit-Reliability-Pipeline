@@ -59,13 +59,14 @@ flowchart TD
 ```
 </details>
 
-**What each stage is actually doing, and why it's a separate stage:**
-- **Extract**: get data out of a source system, as-is — no interpretation yet. Two sources, two different natural frequencies.
-- **Parse**: convert whatever format the source uses (binary Protobuf, CSV) into a row/column shape a database can store. This is format conversion, not business logic.
-- **Load**: write that parsed data into the warehouse, close to its original form. Two different write strategies (append vs. overwrite) because the two sources represent fundamentally different kinds of data — accumulating events vs. a current snapshot.
-- **Transform**: the only place business logic lives — cleaning, joining, calculating, aggregating — all in version-controlled, testable SQL (dbt), not buried in Python scripts.
-- **Orchestrate**: decide *when* each piece runs and in what order, and recover/alert when something breaks. This is coordination, not computation — Airflow doesn't know or care what the SQL inside "trigger dbt run" actually does.
-- **Quality & Monitoring**: the safety net — automated checks that catch bad data before anyone trusts it, and automated notification when the pipeline itself breaks.
+**What's happening at each stage, and why they're kept separate:**
+
+- **Extract** — Pull data straight from the source, untouched. I'm working with two sources here that update on very different timelines: the real-time feed every 15 minutes, and the published schedule once a day.
+- **Parse** — Turn whatever raw format the source gives me (binary Protobuf for the live feed, CSV for the schedule) into rows and columns a database can actually store. This step is just about reshaping the data, not interpreting it.
+- **Load** — Write that parsed data into Snowflake, keeping it close to its original form. I use two different loading strategies here on purpose: the real-time data gets *appended* every run, since I want to build up history over time, while the schedule gets *overwritten* each run, since it's meant to represent "the current schedule," not something to track history for.
+- **Transform** — This is the only layer where actual business logic lives: cleaning, joining, calculating, aggregating. All of it happens in dbt, as version-controlled, testable SQL, instead of being scattered across Python scripts.
+- **Orchestrate** — Airflow's job is just deciding *when* things run and in what order, and catching it when something breaks. It doesn't know or care what's actually happening inside a step like "run dbt" — it just triggers it and watches whether it succeeds.
+- **Quality & Monitoring** — The safety net: automated tests that catch bad data before I trust it, and an automated alert if the pipeline itself breaks.
 
 ### Orchestration in action
 
